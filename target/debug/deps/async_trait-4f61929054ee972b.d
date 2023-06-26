@@ -1,0 +1,12 @@
+/home/nino/development/porta-backend/target/debug/deps/libasync_trait-4f61929054ee972b.so: /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/lib.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/args.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/bound.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/expand.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/lifetime.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/parse.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/receiver.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/verbatim.rs
+
+/home/nino/development/porta-backend/target/debug/deps/async_trait-4f61929054ee972b.d: /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/lib.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/args.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/bound.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/expand.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/lifetime.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/parse.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/receiver.rs /home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/verbatim.rs
+
+/home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/lib.rs:
+/home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/args.rs:
+/home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/bound.rs:
+/home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/expand.rs:
+/home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/lifetime.rs:
+/home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/parse.rs:
+/home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/receiver.rs:
+/home/nino/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-trait-0.1.68/src/verbatim.rs:
