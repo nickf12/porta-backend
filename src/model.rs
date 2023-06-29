@@ -34,17 +34,17 @@ pub struct Project {
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Reward {
-    amount: Option<u32>,
-    denom: Option<String>
+    amount: u32,
+    denom: String
 }
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Bounty {
     pub id: Option<String>,
-    pub project_id: Option<String>,
-    pub title: Option<String>,
-    pub reward: Option<Reward >,
+    pub project_id: String,
+    pub title: String,
+    pub reward: Reward ,
     pub completed : Option<bool>,
     pub createdAt: Option<DateTime<Utc>>,
     pub updatedAt: Option<DateTime<Utc>>,
@@ -75,4 +75,14 @@ pub struct UpdateProjectSchema {
     pub title: Option<String>,
     pub content: Option<String>,
     pub completed: Option<bool>,
+}
+
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct UpdateBountySchema {
+    pub title: Option<String>,
+    pub content: Option<String>,
+    pub completed: Option<bool>,
+    pub reward: Option<Reward>
 }

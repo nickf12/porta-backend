@@ -25,6 +25,7 @@ pub struct SingleProjectResponse {
 }
 
 
+#[derive(Serialize, Debug)]
 pub struct SingleBountyResponse {
     pub status: String,
     pub data: BountyData,
@@ -34,4 +35,12 @@ pub struct ProjectListResponse {
     pub status: String,
     pub results: usize,
     pub projects: Vec<Project>,
+}
+
+
+#[derive(Serialize, Debug)]
+pub struct BountyListResponse {
+    pub status: String,
+    pub results: usize,
+    pub bounties: Vec<Bounty>,
 }

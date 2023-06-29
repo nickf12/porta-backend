@@ -24,7 +24,7 @@ async fn main() {
 
     let app = create_router().layer(cors);
     
-    let addr= SocketAddr::from(([0,0,0,1],8000));
+    let addr= SocketAddr::from(([0,0,0,0],8000));
 
     println!(" Server started successfully");
     axum::Server::bind(&addr)
