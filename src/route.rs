@@ -6,8 +6,7 @@ use axum::{
 use crate::{
     handler::{
         create_project_handler, delete_project_handler, edit_project_handler, get_project_handler,
-        porta_handler, projects_list_handler,
-    },
+        porta_handler, projects_list_handler,     },
     model,
 };
 
@@ -26,5 +25,11 @@ pub fn create_router() -> Router {
                 .patch(edit_project_handler)
                 .delete(delete_project_handler),
         )
+        // .route(
+        //     "/api/bounties/:id",
+        //     get(get_bounty_handler)
+        //         // .patch(edit_bounty_handler)
+        //         // .delete(delete_bounty_handler),
+        // )
         .with_state(db)
 }

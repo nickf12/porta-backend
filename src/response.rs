@@ -1,4 +1,4 @@
-use crate::model::Project;
+use crate::model::{Project,Bounty};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -12,12 +12,23 @@ pub struct ProjectData {
     pub project: Project,
 }
 
+
+#[derive(Serialize, Debug)]
+pub struct BountyData {
+    pub bounty: Bounty,
+}
+
 #[derive(Serialize, Debug)]
 pub struct SingleProjectResponse {
     pub status: String,
     pub data: ProjectData,
 }
 
+
+pub struct SingleBountyResponse {
+    pub status: String,
+    pub data: BountyData,
+}
 #[derive(Serialize, Debug)]
 pub struct ProjectListResponse {
     pub status: String,

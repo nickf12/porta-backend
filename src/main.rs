@@ -1,3 +1,5 @@
+use std::net::SocketAddr;
+
 use axum::{response::IntoResponse, routing::get, Json, Router};
 
 mod handler;
@@ -21,10 +23,14 @@ async fn main() {
         .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
 
     let app = create_router().layer(cors);
+    
+    let addr= SocketAddr::from(([0,0,0,1],8000));
 
-    println!("🚀 Server started successfully");
-    axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
+    println!(" Server started successfully");
+    axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
         .unwrap();
 }
+
+
