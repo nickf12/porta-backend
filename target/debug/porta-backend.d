@@ -1,1 +1,0 @@
-/home/dario/Projects/porta-backend/target/debug/porta-backend: /home/dario/Projects/porta-backend/src/handler.rs /home/dario/Projects/porta-backend/src/main.rs /home/dario/Projects/porta-backend/src/model.rs /home/dario/Projects/porta-backend/src/response.rs /home/dario/Projects/porta-backend/src/route.rs
