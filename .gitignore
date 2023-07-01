@@ -1,2 +1,4 @@
-./gitignore
-./porta.postman_collection.json
+.gitignore
+.porta.postman_collection.json
+
+/target
