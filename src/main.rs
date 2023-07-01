@@ -1,5 +1,3 @@
-use axum::{response::IntoResponse, routing::get, Json, Router};
-
 mod handler;
 mod model;
 mod response;
@@ -14,6 +12,10 @@ use tower_http::cors::CorsLayer;
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::DEBUG)
+        .init();
+
     let cors = CorsLayer::new()
         .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
         .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])

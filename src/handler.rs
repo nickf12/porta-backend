@@ -4,11 +4,15 @@ use axum::{
     response::IntoResponse,
     Json,
 };
+use tracing_subscriber::fmt::writer::OrElse;
 use uuid::Uuid;
 
 use crate::{
-    model::{Project, QueryOptions, UpdateProjectSchema, DB},
-    response::{ProjectData, ProjectListResponse, SingleProjectResponse},
+    model::{Project, QueryOptions, UpdateProject, UpdateProjectSchema, User, DB},
+    response::{
+        ProjectData, ProjectListResponse, SingleProjectResponse, SingleUserResponse, UserData,
+        UserListResponse,
+    },
 };
 
 // Porta Handler
@@ -23,7 +27,7 @@ pub async fn porta_handler() -> impl IntoResponse {
     Json(json_response)
 }
 
-// Axum Route Function to Fetch All Records
+// Axum Route Function to Fetch All Project Records
 pub async fn projects_list_handler(
     opts: Option<Query<QueryOptions>>,
     State(db): State<DB>,
@@ -36,6 +40,7 @@ pub async fn projects_list_handler(
     let offset = (opts.page.unwrap_or(1) - 1) * limit;
 
     let projects: Vec<Project> = projects
+        .projects
         .clone()
         .into_iter()
         .skip(offset)
@@ -59,7 +64,11 @@ pub async fn get_project_handler(
     let id = id.to_string();
     let vec = db.lock().await;
 
-    if let Some(project) = vec.iter().find(|project| project.id == Some(id.to_owned())) {
+    if let Some(project) = vec
+        .projects
+        .iter()
+        .find(|project| project.id == Some(id.to_owned()))
+    {
         let json_response = SingleProjectResponse {
             status: "success".to_string(),
             data: ProjectData {
@@ -83,10 +92,14 @@ pub async fn create_project_handler(
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let mut vec = db.lock().await;
 
-    if let Some(project) = vec.iter().find(|project| project.title == body.title) {
+    if let Some(project) = vec
+        .projects
+        .iter()
+        .find(|project| project.project_id == body.project_id)
+    {
         let error_response = serde_json::json!({
             "status": "fail",
-            "message": format!("Project with title: '{}' already exists", project.title),
+            "message": format!("Project with ID: '{}' already exists", project.project_id),
         });
         return Err((StatusCode::CONFLICT, Json(error_response)));
     }
@@ -101,7 +114,7 @@ pub async fn create_project_handler(
 
     let project = body.to_owned();
 
-    vec.push(body);
+    vec.projects.push(body);
 
     let json_response = SingleProjectResponse {
         status: "success".to_string(),
@@ -115,37 +128,67 @@ pub async fn create_project_handler(
 pub async fn edit_project_handler(
     Path(id): Path<Uuid>,
     State(db): State<DB>,
-    Json(body): Json<UpdateProjectSchema>,
+    Json(body): Json<UpdateProject>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let id = id.to_string();
     let mut vec = db.lock().await;
 
     if let Some(project) = vec
+        .projects
         .iter_mut()
         .find(|project| project.id == Some(id.clone()))
     {
         let datetime = chrono::Utc::now();
-        let title = body
-            .title
+        let project_id = body
+            .project_id
             .to_owned()
-            .unwrap_or_else(|| project.title.to_owned());
-        let content = body
-            .content
+            .unwrap_or_else(|| project.project_id.to_owned());
+        let project_name = body
+            .project_id
             .to_owned()
-            .unwrap_or_else(|| project.content.to_owned());
+            .unwrap_or_else(|| project.project_name.to_owned());
+        let project_deliverables = body
+            .project_deliverables
+            .to_owned()
+            .unwrap_or_else(|| project.project_deliverables.to_owned());
+        let project_description = body
+            .project_lead_address
+            .to_owned()
+            .unwrap_or_else(|| project.project_description.to_owned());
+        let project_lead_address = body
+            .project_id
+            .to_owned()
+            .unwrap_or_else(|| project.project_lead_address.to_owned());
+        let project_budget = body
+            .project_budget
+            .to_owned()
+            .unwrap_or_else(|| project.project_budget.to_owned());
+        let project_lead_reward = body
+            .project_lead_reward
+            .to_owned()
+            .unwrap_or_else(|| project.project_lead_reward.to_owned());
         let completed = body.completed.unwrap_or(project.completed.unwrap());
+        let project_denom = body
+            .project_denom
+            .to_owned()
+            .unwrap_or_else(|| project.project_denom.to_owned());
+        let project_type = body
+            .project_type
+            .to_owned()
+            .unwrap_or_else(|| project.project_type.to_owned());
+
         let payload = Project {
             id: project.id.to_owned(),
-            title: if !title.is_empty() {
-                title
-            } else {
-                project.title.to_owned()
-            },
-            content: if !content.is_empty() {
-                content
-            } else {
-                project.content.to_owned()
-            },
+            project_id,
+            project_budget,
+            project_deliverables,
+            project_denom,
+            project_description,
+            project_lead_address,
+            project_lead_reward,
+            project_name,
+            project_type,
+
             completed: Some(completed),
             createdAt: project.createdAt,
             updatedAt: Some(datetime),
@@ -178,10 +221,11 @@ pub async fn delete_project_handler(
     let mut vec = db.lock().await;
 
     if let Some(pos) = vec
+        .projects
         .iter()
         .position(|project| project.id == Some(id.clone()))
     {
-        vec.remove(pos);
+        vec.projects.remove(pos);
         return Ok((StatusCode::NO_CONTENT, Json("")));
     }
 
@@ -190,4 +234,65 @@ pub async fn delete_project_handler(
         "message": format!("Project with ID: {} not found", id)
     });
     Err((StatusCode::NOT_FOUND, Json(error_response)))
+}
+
+//  Axum Route to get All users handler
+pub async fn user_list_handler(
+    opts: Option<Query<QueryOptions>>,
+    State(db): State<DB>,
+) -> impl IntoResponse {
+    let users = db.lock().await;
+
+    let Query(opts) = opts.unwrap_or_default();
+
+    let limit = opts.limit.unwrap_or(10);
+    let offset = (opts.page.unwrap_or(1) - 1) * limit;
+
+    let users: Vec<User> = users
+        .users
+        .clone()
+        .into_iter()
+        .skip(offset)
+        .take(limit)
+        .collect();
+
+    let json_response = UserListResponse {
+        status: "success".to_string(),
+        results: users.len(),
+        users,
+    };
+
+    Json(json_response)
+}
+
+// Axum Route Function to Add a Record
+pub async fn _create_user_handler(
+    State(db): State<DB>,
+    Json(mut body): Json<User>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let mut vec = db.lock().await;
+
+    if let Some(user) = vec.users.iter().find(|user| user.address == body.address) {
+        let error_response = serde_json::json!({
+            "status": "fail",
+            "message": format!("Project with title: '{}' already exists", user.address),
+        });
+        return Err((StatusCode::CONFLICT, Json(error_response)));
+    }
+
+    let uuid_id = Uuid::new_v4();
+    let _datetime = chrono::Utc::now();
+
+    body.id = Some(uuid_id.to_string());
+
+    let user: User = body.to_owned();
+
+    vec.users.push(body);
+
+    let json_response = SingleUserResponse {
+        status: "success".to_string(),
+        data: UserData { user },
+    };
+
+    Ok((StatusCode::CREATED, Json(json_response)))
 }

@@ -1,4 +1,4 @@
-use crate::model::Project;
+use crate::model::{Project, User};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -23,4 +23,22 @@ pub struct ProjectListResponse {
     pub status: String,
     pub results: usize,
     pub projects: Vec<Project>,
+}
+
+#[derive(Serialize, Debug)]
+pub struct UserListResponse {
+    pub status: String,
+    pub results: usize,
+    pub users: Vec<User>,
+}
+
+#[derive(Serialize, Debug)]
+pub struct UserData {
+    pub user: User,
+}
+
+#[derive(Serialize, Debug)]
+pub struct SingleUserResponse {
+    pub status: String,
+    pub data: UserData,
 }
