@@ -35,6 +35,7 @@ pub async fn projects_list_handler(
     let limit = opts.limit.unwrap_or(10);
     let offset = (opts.page.unwrap_or(1) - 1) * limit;
 
+    // It's not too expensive to clone the entire vector?
     let projects: Vec<Project> = projects.Projects
         .clone()
         .into_iter()
