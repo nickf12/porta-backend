@@ -24,13 +24,13 @@ async fn main() {
 
     let app = create_router().layer(cors);
     
-    let addr= SocketAddr::from(([0,0,0,0],8000));
 
     println!(" Server started successfully");
-    axum::Server::bind(&addr)
+        axum::Server::bind(&"0.0.0.0:8000".parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();
 }
+
 
 
