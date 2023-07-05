@@ -308,7 +308,7 @@ pub async fn get_all_bounty_from_project_handler(
     let vec = db.lock().await;
     // let bounties :Vec<&Bounty>= vec.Bounties.iter().filter(|bounty| bounty.project_id == id).collect();
     let bounties: Vec<Bounty> = vec
-        .Bounties
+        .bounties
         .clone()
         .into_iter()
         .filter(|bounty| bounty.project_id == id)
@@ -337,7 +337,7 @@ pub async fn bounty_list_handler(
     let offset = (opts.page.unwrap_or(1) - 1) * limit;
 
     let bounties: Vec<Bounty> = bounties
-        .Bounties
+        .bounties
         .clone()
         .into_iter()
         .skip(offset)
@@ -362,7 +362,7 @@ pub async fn get_bounty_handler(
     let vec = db.lock().await;
 
     if let Some(bounty) = vec
-        .Bounties
+        .bounties
         .iter()
         .find(|bounty| bounty.id == Some(id.to_owned()))
     {
@@ -390,7 +390,7 @@ pub async fn create_bounty_handler(
     let mut vec = db.lock().await;
 
     if let Some(bounty) = vec
-        .Bounties
+        .bounties
         .iter()
         .find(|bounty| bounty.title == body.title)
     {
@@ -411,7 +411,7 @@ pub async fn create_bounty_handler(
 
     let bounty = body.to_owned();
 
-    vec.Bounties.push(body);
+    vec.bounties.push(body);
 
     let json_response = SingleBountyResponse {
         status: "success".to_string(),
@@ -431,7 +431,7 @@ pub async fn edit_bounty_handler(
     let mut vec = db.lock().await;
 
     if let Some(bounty) = vec
-        .Bounties
+        .bounties
         .iter_mut()
         .find(|bounty| bounty.id == Some(id.clone()))
     {
@@ -486,11 +486,11 @@ pub async fn delete_bounty_handler(
     let mut vec = db.lock().await;
 
     if let Some(pos) = vec
-        .Bounties
+        .bounties
         .iter()
         .position(|bounty| bounty.id == Some(id.clone()))
     {
-        vec.Bounties.remove(pos);
+        vec.bounties.remove(pos);
         return Ok((StatusCode::NO_CONTENT, Json("")));
     }
 
