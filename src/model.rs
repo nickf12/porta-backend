@@ -30,18 +30,43 @@ pub struct Project {
     pub createdAt: Option<DateTime<Utc>>,
     pub updatedAt: Option<DateTime<Utc>>,
 }
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct Reward {
+    amount: u32,
+    denom: String
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct Bounty {
+    pub id: Option<String>,
+    pub project_id: String,
+    pub title: String,
+    pub reward: Reward ,
+    pub completed : Option<bool>,
+    pub createdAt: Option<DateTime<Utc>>,
+    pub updatedAt: Option<DateTime<Utc>>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct BountyRequest {
+    pub id: Option<String>
+}
+
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Database {
     pub projects: Vec<Project>,
     pub users: Vec<User>,
+    pub bounties: Vec<Bounty>,
 }
 impl Database {
     fn new() -> Database {
         Database {
             projects: Vec::new(),
             users: Vec::new(),
+            bounties: Vec::new(),
         }
     }
 }
@@ -63,6 +88,16 @@ pub struct UpdateProjectSchema {
     pub title: Option<String>,
     pub content: Option<String>,
     pub completed: Option<bool>,
+}
+
+
+#[allow(non_snake_case)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct UpdateBountySchema {
+    pub title: Option<String>,
+    pub content: Option<String>,
+    pub completed: Option<bool>,
+    pub reward: Option<Reward>
 }
 
 #[allow(non_snake_case)]
