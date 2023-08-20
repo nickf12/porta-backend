@@ -32,7 +32,16 @@ async fn quick_dev() -> Result<()> {
         }),
     );
     user1.await?.print().await?;
-
+    // Login
+    let req_login = hc.do_post(
+        "/api/login",
+        json!({
+            "email": "demo1",
+            "password": "welcom",
+            "address":"3298420398490238jiweojwoeirjow"
+        }),
+    );
+    req_login.await?.print().await?;
     // List Projects
     hc.do_get("/api/projects").await?.print().await?;
 

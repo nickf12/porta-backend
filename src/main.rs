@@ -1,6 +1,7 @@
 pub use self::error::{AppError, Result};
 
 mod auth;
+mod auth_handler;
 mod error;
 mod handler;
 mod model;

@@ -1,9 +1,8 @@
+use crate::auth::User;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::Mutex;
-
-use crate::auth::User;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize, Clone)]

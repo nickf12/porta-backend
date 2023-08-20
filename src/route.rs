@@ -4,14 +4,13 @@ use axum::{
 };
 
 use crate::{
+    auth_handler::{api_login, create_user_handler, user_list_handler},
     handler::{
-        api_login, create_project_handler, create_user_handler, delete_project_handler,
-        edit_project_handler, get_project_handler, porta_handler, projects_list_handler,
-        user_list_handler,
+        create_project_handler, delete_project_handler, edit_project_handler, get_project_handler,
+        porta_handler, projects_list_handler,
     },
     model,
 };
-
 pub fn create_router() -> Router {
     let db = model::porta_db();
 
