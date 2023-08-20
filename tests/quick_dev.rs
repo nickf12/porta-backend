@@ -11,6 +11,7 @@ async fn quick_dev() -> Result<()> {
 
     hc.do_get("/api/users").await?.print().await?;
 
+    // Login
     let req_login = hc.do_post(
         "/api/login",
         json!({
@@ -21,6 +22,7 @@ async fn quick_dev() -> Result<()> {
     );
     req_login.await?.print().await?;
 
+    // Create User
     let user1 = hc.do_post(
         "/api/users",
         json!({
@@ -31,8 +33,10 @@ async fn quick_dev() -> Result<()> {
     );
     user1.await?.print().await?;
 
+    // List Projects
     hc.do_get("/api/projects").await?.print().await?;
 
+    // Create Project
     let project1 = hc.do_post(
         "/api/projects",
         json!({
@@ -49,6 +53,7 @@ async fn quick_dev() -> Result<()> {
     );
     project1.await?.print().await?;
 
+    // Edit Project
     let project1_1 = hc.do_patch(
         "/api/project/?id=AUX4",
         json!({
