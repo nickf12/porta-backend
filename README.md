@@ -15,5 +15,6 @@
 ### to build the project and start the server. This command watches the ‘src‘ directory for changes and restarts the server accordingly: ###
 
 ``` cargo watch -q -c -w src/ -x run ```
+``` cargo watch -q -c -w tests/ -x "test -q quick_dev -- --nocapture" ```
 
 Navigate to  http://localhost:8000/api/porta

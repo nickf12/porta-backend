@@ -3,14 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
-#[allow(non_snake_case)]
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct User {
-    pub id: Option<String>,
-    pub email: String,
-    pub password: String,
-    pub address: String,
-}
+use crate::auth::User;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -23,7 +16,7 @@ pub struct Project {
     pub project_budget: f64,
     pub project_denom: String,
     pub project_type: String,
-    // pub project_bounties: Vec<Bounty>, Enable this field when bounty module is ready
+    // TODO: pub project_bounties: Vec<Bounty>, Enable this field when bounty module is ready
     pub project_description: String,
     pub project_deliverables: String,
     pub completed: Option<bool>,
@@ -45,6 +38,7 @@ impl Database {
         }
     }
 }
+
 pub type DB = Arc<Mutex<Database>>;
 
 pub fn porta_db() -> DB {
@@ -55,14 +49,6 @@ pub fn porta_db() -> DB {
 pub struct QueryOptions {
     pub page: Option<usize>,
     pub limit: Option<usize>,
-}
-
-#[allow(non_snake_case)]
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct UpdateProjectSchema {
-    pub title: Option<String>,
-    pub content: Option<String>,
-    pub completed: Option<bool>,
 }
 
 #[allow(non_snake_case)]

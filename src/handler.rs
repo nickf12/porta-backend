@@ -4,11 +4,18 @@ use axum::{
     response::IntoResponse,
     Json,
 };
-use tracing_subscriber::fmt::writer::OrElse;
+
+use serde_json::json;
+use tower_cookies::{Cookie, Cookies};
 use uuid::Uuid;
 
 use crate::{
-    model::{Project, QueryOptions, UpdateProject, UpdateProjectSchema, User, DB},
+    auth::{User, AUTH_TOKEN},
+    AppError,
+};
+
+use crate::{
+    model::{Project, QueryOptions, UpdateProject, DB},
     response::{
         ProjectData, ProjectListResponse, SingleProjectResponse, SingleUserResponse, UserData,
         UserListResponse,
@@ -17,6 +24,8 @@ use crate::{
 
 // Porta Handler
 pub async fn porta_handler() -> impl IntoResponse {
+    println!("->> {:<12} - api_porta", "HANDLER");
+
     const MESSAGE: &str = "Build Simple CRUD API in Rust using Axum";
 
     let json_response = serde_json::json!({
@@ -32,6 +41,7 @@ pub async fn projects_list_handler(
     opts: Option<Query<QueryOptions>>,
     State(db): State<DB>,
 ) -> impl IntoResponse {
+    println!("->> {:<12} - api_project_list", "HANDLER");
     let projects = db.lock().await;
 
     let Query(opts) = opts.unwrap_or_default();
@@ -61,6 +71,8 @@ pub async fn get_project_handler(
     Path(id): Path<Uuid>,
     State(db): State<DB>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    println!("->> {:<12} - api_get_project", "HANDLER");
+
     let id = id.to_string();
     let vec = db.lock().await;
 
@@ -90,6 +102,8 @@ pub async fn create_project_handler(
     State(db): State<DB>,
     Json(mut body): Json<Project>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    println!("->> {:<12} - api_create_project", "HANDLER");
+
     let mut vec = db.lock().await;
 
     if let Some(project) = vec
@@ -130,13 +144,15 @@ pub async fn edit_project_handler(
     State(db): State<DB>,
     Json(body): Json<UpdateProject>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    println!("->> {:<12} - api_edit_project", "HANDLER");
+    print!("ID -> {}", id.to_string());
     let id = id.to_string();
     let mut vec = db.lock().await;
 
     if let Some(project) = vec
         .projects
         .iter_mut()
-        .find(|project| project.id == Some(id.clone()))
+        .find(|project| project.project_id == id.clone())
     {
         let datetime = chrono::Utc::now();
         let project_id = body
@@ -241,6 +257,8 @@ pub async fn user_list_handler(
     opts: Option<Query<QueryOptions>>,
     State(db): State<DB>,
 ) -> impl IntoResponse {
+    println!("->> {:<12} - api_user_list", "HANDLER");
+
     let users = db.lock().await;
 
     let Query(opts) = opts.unwrap_or_default();
@@ -266,18 +284,20 @@ pub async fn user_list_handler(
 }
 
 // Axum Route Function to Add a Record
-pub async fn _create_user_handler(
+pub async fn create_user_handler(
     State(db): State<DB>,
     Json(mut body): Json<User>,
-) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+) -> Result<impl IntoResponse, AppError> {
     let mut vec = db.lock().await;
 
-    if let Some(user) = vec.users.iter().find(|user| user.address == body.address) {
-        let error_response = serde_json::json!({
-            "status": "fail",
-            "message": format!("Project with title: '{}' already exists", user.address),
-        });
-        return Err((StatusCode::CONFLICT, Json(error_response)));
+    #[warn(clippy::search_is_some)]
+    if vec
+        .users
+        .iter()
+        .find(|&user| user.address == body.address)
+        .is_none()
+    {
+        return Err(AppError::UserAlreadyExits);
     }
 
     let uuid_id = Uuid::new_v4();
@@ -295,4 +315,28 @@ pub async fn _create_user_handler(
     };
 
     Ok((StatusCode::CREATED, Json(json_response)))
+}
+
+pub async fn api_login(
+    cookies: Cookies,
+    State(_db): State<DB>,
+    Json(body): Json<User>,
+) -> Result<impl IntoResponse, AppError> {
+    println!("->> {:<12} - api_login", "HANDLER");
+
+    // TODO : implement real db/auth Logic.
+    if body.email != "demo1" || body.password != "welcome" {
+        return Err(AppError::WrongCredential);
+    }
+
+    // FIXME: implement real auth-token generation/signature.
+    cookies.add(Cookie::new(AUTH_TOKEN, "user-1.exp.sign"));
+
+    // Create the success body
+    let _body = Json(json!({
+        "result": {
+            "success":true
+        }
+    }));
+    Ok(())
 }

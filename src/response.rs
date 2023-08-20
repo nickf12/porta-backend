@@ -1,4 +1,5 @@
-use crate::model::{Project, User};
+use crate::auth::User;
+use crate::model::Project;
 use serde::Serialize;
 
 #[derive(Serialize)]
