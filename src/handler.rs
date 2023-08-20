@@ -290,13 +290,7 @@ pub async fn create_user_handler(
 ) -> Result<impl IntoResponse, AppError> {
     let mut vec = db.lock().await;
 
-    #[warn(clippy::search_is_some)]
-    if vec
-        .users
-        .iter()
-        .find(|&user| user.address == body.address)
-        .is_none()
-    {
+    if vec.users.iter().any(|user| user.address == body.address) {
         return Err(AppError::UserAlreadyExits);
     }
 
