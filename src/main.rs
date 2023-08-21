@@ -16,12 +16,10 @@ use axum::{
         header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
         HeaderValue, Method,
     },
-    middleware,
     response::Response,
 };
 use once_cell::sync::Lazy;
 use route::create_router;
-use tower_cookies::CookieManagerLayer;
 use tower_http::cors::CorsLayer;
 
 // secret key for JWT token
