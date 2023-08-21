@@ -12,6 +12,7 @@ pub enum AppError {
     InternalServerError,
     UserDoesNotExist,
     UserAlreadyExits,
+    AuthFailNoAuthTokenCookie,
 }
 
 impl IntoResponse for AppError {
@@ -21,6 +22,7 @@ impl IntoResponse for AppError {
                 StatusCode::INTERNAL_SERVER_ERROR,
                 "an internal server error occured",
             ),
+            Self::AuthFailNoAuthTokenCookie => (StatusCode::UNAUTHORIZED, "No Auth Token Cookie"),
             Self::InvalidToken => (StatusCode::BAD_REQUEST, "invalid token"),
             Self::MissingCredential => (StatusCode::BAD_REQUEST, "missing credential"),
             Self::TokenCreation => (StatusCode::INTERNAL_SERVER_ERROR, "failed to create token"),

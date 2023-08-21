@@ -5,6 +5,7 @@ mod auth_handler;
 mod error;
 mod handler;
 mod model;
+mod mw;
 mod response;
 mod route;
 
@@ -41,10 +42,7 @@ async fn main() {
         .allow_credentials(true)
         .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
 
-    let app = create_router()
-        .layer(cors)
-        .layer(middleware::map_response(main_response_mapper))
-        .layer(CookieManagerLayer::new());
+    let app = create_router().layer(cors);
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
 
