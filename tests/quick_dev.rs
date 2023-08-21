@@ -6,7 +6,7 @@ use serde_json::json;
 #[tokio::test]
 async fn quick_dev() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:8080")?;
-    hc.do_get("/api/porta").await?.print().await?;
+    hc.do_get("/porta").await?.print().await?;
     hc.do_get("/api/projects").await?.print().await?;
 
     hc.do_get("/api/users").await?.print().await?;
@@ -20,6 +20,8 @@ async fn quick_dev() -> Result<()> {
             "address":"3298420398490238jiweojwoeirjow"
         }),
     );
+    hc.do_get("/api/projects").await?.print().await?;
+
     req_login.await?.print().await?;
 
     // Create User
