@@ -19,11 +19,11 @@ use crate::model::DB;
 pub fn mw_routes(db: DB) -> Router<Arc<Mutex<Database>>> {
     Router::new()
         .route(
-            "/api/projects",
+            "/projects",
             post(create_project_handler).get(projects_list_handler),
         )
         .route(
-            "/api/projects/:id",
+            "/projects/:id",
             get(get_project_handler)
                 .patch(edit_project_handler)
                 .delete(delete_project_handler),

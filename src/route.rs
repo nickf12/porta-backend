@@ -24,7 +24,7 @@ pub fn create_router() -> Router {
             "/api/users",
             post(create_user_handler).get(user_list_handler),
         )
-        .nest("/", mw_routes)
+        .nest("/api", mw_routes)
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new())
         .with_state(db)
