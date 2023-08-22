@@ -33,7 +33,7 @@ pub struct Reward {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Bounty {
     pub id: Option<String>,
-    pub bouty_id: String,
+    pub bounty_id: String,
     pub project_id: String,
     pub title: String,
     pub reward: Reward,
@@ -95,6 +95,8 @@ pub struct UpdateProject {
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct UpdateBountySchema {
+    pub bounty_id: Option<String>,
+    pub project_id: Option<String>,
     pub title: Option<String>,
     pub content: Option<String>,
     pub completed: Option<bool>,
