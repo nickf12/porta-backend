@@ -16,7 +16,7 @@ use crate::{
 pub async fn porta_handler() -> impl IntoResponse {
     println!("->> {:<12} - api_porta", "HANDLER");
 
-    const MESSAGE: &str = "Build Simple CRUD API in Rust using Axum";
+    const MESSAGE: &str = "Porta backend in Rust using Axum";
 
     let json_response = serde_json::json!({
         "status": "success",
