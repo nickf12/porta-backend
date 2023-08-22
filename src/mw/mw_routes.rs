@@ -37,7 +37,7 @@ pub fn mw_routes(db: DB) -> Router<Arc<Mutex<Database>>> {
         )
         .route("/projects/:id/bounty", post(create_bounty_handler))
         .route(
-            "projects/:id/bounty/:id",
+            "/projects/:id/bounty/:id",
             get(get_bounty_handler)
                 .patch(edit_bounty_handler)
                 .delete(delete_bounty_handler),
