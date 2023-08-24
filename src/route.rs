@@ -6,7 +6,7 @@ use axum::{
 use tower_cookies::CookieManagerLayer;
 
 use crate::{
-    auth_handler::{api_login, create_user_handler, user_list_handler},
+    auth_handler::{api_login, create_user_handler},
     handler::porta_handler,
     main_response_mapper, model,
     mw::{mw_auth::mw_require_auth, mw_routes::mw_routes},
@@ -21,10 +21,7 @@ pub fn create_router() -> Router {
     Router::new()
         .route("/porta", get(porta_handler))
         .route("/api/login", post(api_login))
-        .route(
-            "/api/users",
-            post(create_user_handler).get(user_list_handler),
-        )
+        .route("/api/user", post(create_user_handler))
         .nest("/api", mw_routes)
         .layer(middleware::map_response(main_response_mapper))
         .layer(CookieManagerLayer::new())

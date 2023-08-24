@@ -1,15 +1,20 @@
 #![allow(unused)]
 
 use anyhow::Result;
+use httpc_test::Response;
 use serde_json::json;
 
 #[tokio::test]
 async fn quick_dev() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:8080")?;
-    hc.do_get("/porta").await?.print().await?;
-    hc.do_get("/api/projects").await?.print().await?;
 
-    hc.do_get("/api/users").await?.print().await?;
+    let porta = hc.do_get("/porta").await?;
+
+    assert_eq!(porta.status(), 200);
+
+    assert_eq!(hc.do_get("/api/projects").await?.status(), 401);
+
+    assert_eq!(hc.do_get("/api/users").await?.status(), 401);
 
     // Login
     let req_login = hc.do_post(
@@ -20,9 +25,10 @@ async fn quick_dev() -> Result<()> {
             "address":"3298420398490238jiweojwoeirjow"
         }),
     );
-    hc.do_get("/api/projects").await?.print().await?;
+    assert_eq!(req_login.await?.status(), 401);
+    // hc.do_get("/api/projects").await?.print().await?;
 
-    req_login.await?.print().await?;
+    // req_login.await?.print().await?;
 
     // Create User
     let user1 = hc.do_post(
@@ -33,7 +39,7 @@ async fn quick_dev() -> Result<()> {
             "address":"3298420398490238jiweojwoeirjow"
         }),
     );
-    user1.await?.print().await?;
+    assert_eq!(user1.await?.status(), 201);
     // Login
     let req_login = hc.do_post(
         "/api/login",
@@ -43,7 +49,7 @@ async fn quick_dev() -> Result<()> {
             "address":"3298420398490238jiweojwoeirjow"
         }),
     );
-    req_login.await?.print().await?;
+    assert_eq!(req_login.await?.status(), 200);
     // List Projects
     hc.do_get("/api/projects").await?.print().await?;
 

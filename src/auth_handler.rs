@@ -25,6 +25,8 @@ pub async fn create_user_handler(
     State(db): State<DB>,
     Json(mut body): Json<User>,
 ) -> Result<impl IntoResponse, AppError> {
+    println!("->> {:<12} - api_create_user", "HANDLER");
+
     let mut vec = db.lock().await;
 
     if vec.users.iter().any(|user| user.address == body.address) {
