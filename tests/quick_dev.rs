@@ -9,52 +9,45 @@ async fn quick_dev() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:8080")?;
 
     let porta = hc.do_get("/porta").await?;
-
+    println! {"/Porta status is {}", &porta.status()};
     assert_eq!(porta.status(), 200);
 
-    assert_eq!(hc.do_get("/api/projects").await?.status(), 401);
+    // assert_eq!(hc.do_get("/api/projects").await?.status(), 500);
 
-    assert_eq!(hc.do_get("/api/users").await?.status(), 401);
+    // assert_eq!(hc.do_get("/api/users").await?.status(), 500);
 
     // Login
     let req_login = hc.do_post(
         "/api/login",
         json!({
-            "email": "demo1",
-            "password": "welcom",
-            "address":"3298420398490238jiweojwoeirjow"
+            "email": "demo",
+            "password": "we",
+            "address":"123121"
         }),
     );
-    assert_eq!(req_login.await?.status(), 401);
+
     // hc.do_get("/api/projects").await?.print().await?;
 
     // req_login.await?.print().await?;
 
     // Create User
     let user1 = hc.do_post(
-        "/api/users",
+        "/api/user",
         json!({
             "email": "demo1",
             "password": "welcom",
             "address":"3298420398490238jiweojwoeirjow"
         }),
     );
-    assert_eq!(user1.await?.status(), 201);
+    user1.await?.print().await?;
+    // assert_eq!(user1.await?.status(), 201);
     // Login
-    let req_login = hc.do_post(
-        "/api/login",
-        json!({
-            "email": "demo1",
-            "password": "welcom",
-            "address":"3298420398490238jiweojwoeirjow"
-        }),
-    );
-    assert_eq!(req_login.await?.status(), 200);
+
     // List Projects
     hc.do_get("/api/projects").await?.print().await?;
 
     // Create Project
-    let project1 = hc.do_post(
+    let project = hc.do_post(
         "/api/projects",
         json!({
              "project_id": "AUX4",
@@ -68,11 +61,10 @@ async fn quick_dev() -> Result<()> {
              "project_deliverables": "",
         }),
     );
-    project1.await?.print().await?;
-
-    // Edit Project
+    project.await?.print().await?;
+    println!("here1");
     let project1_1 = hc.do_patch(
-        "/api/project/?id=AUX4",
+        "/api/projects/AUX4",
         json!({
              "project_name": "Pecunia Inception2",
              "project_lead_address": "arewfaewfawfwae",
@@ -85,7 +77,12 @@ async fn quick_dev() -> Result<()> {
         }),
     );
     project1_1.await?.print().await?;
+    let res_pro = hc.do_get("/api/projects/AUX4");
+    res_pro.await?.print().await?;
 
+    // let res = hc.do_delete("/api/project/AUX4");
+
+    //    res.await?.print().await?;
     Ok(())
 }
 

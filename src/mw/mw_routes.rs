@@ -21,7 +21,6 @@ use crate::model::DB;
 
 pub fn mw_routes(db: DB) -> Router<Arc<Mutex<Database>>> {
     Router::new()
-        .route("/users", get(user_list_handler))
         .route(
             "/projects",
             post(create_project_handler).get(projects_list_handler),
@@ -35,13 +34,15 @@ pub fn mw_routes(db: DB) -> Router<Arc<Mutex<Database>>> {
         .route("/all/bounties", get(bounty_list_handler))
         .route(
             "/projects/:id/bounties",
-            get(get_all_bounty_from_project_handler).post(create_bounty_handler),
+            get(get_all_bounty_from_project_handler),
         )
+        .route("/projects/:id/bounty", post(create_bounty_handler))
         .route(
             "/projects/:id/bounty/:id",
             get(get_bounty_handler)
                 .patch(edit_bounty_handler)
                 .delete(delete_bounty_handler),
         )
+        .route("/users", get(user_list_handler))
         .with_state(db)
 }

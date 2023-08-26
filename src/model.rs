@@ -3,11 +3,12 @@ use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use uuid::Uuid;
 
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Project {
-    pub id: Option<String>,
+    pub id: Option<Uuid>,
     pub project_id: String,
     pub project_name: String,
     pub project_lead_address: String,
@@ -32,7 +33,7 @@ pub struct Reward {
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Bounty {
-    pub id: Option<String>,
+    pub id: Option<Uuid>,
     pub bounty_id: String,
     pub project_id: String,
     pub title: String,

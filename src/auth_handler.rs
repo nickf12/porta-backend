@@ -13,6 +13,7 @@ use crate::{
     auth::{User, AUTH_TOKEN},
     model::QueryOptions,
     response::UserListResponse,
+    token::{self, TokenDetails},
     AppError,
 };
 
@@ -36,8 +37,7 @@ pub async fn create_user_handler(
     let uuid_id = Uuid::new_v4();
     let _datetime = chrono::Utc::now();
 
-    body.id = Some(uuid_id.to_string());
-
+    body.id = Some(uuid_id);
     let user: User = body.to_owned();
 
     vec.users.push(body);
@@ -81,6 +81,7 @@ pub async fn user_list_handler(
     Json(json_response)
 }
 
+// Login
 pub async fn api_login(
     cookies: Cookies,
     State(db): State<DB>,
@@ -106,6 +107,18 @@ pub async fn api_login(
         .iter()
         .find(|user| (user.address == body.address && user.password == body.password))
         .unwrap();
+
+    // let access_token_details = generate_token(
+    //     user.id.unwrap(),
+    //     data.env.access_token_max_age,
+    //     data.env.access_token_private_key.to_owned(),
+    // )?;
+    // let refresh_token_details = generate_token(
+    //     user.id,
+    //     data.env.refresh_token_max_age,
+    //     data.env.refresh_token_private_key.to_owned(),
+    // )?;
+
     // FIXME: implement real auth-token generation/signature.
     cookies.add(Cookie::new(AUTH_TOKEN, "user-1.exp.sign"));
 
@@ -118,4 +131,18 @@ pub async fn api_login(
 
     }));
     Ok(body)
+}
+
+fn _generate_token(
+    user_id: uuid::Uuid,
+    max_age: i64,
+    private_key: String,
+) -> Result<TokenDetails, (StatusCode, Json<serde_json::Value>)> {
+    token::generate_jwt_token(user_id, max_age, private_key).map_err(|e| {
+        let error_response = serde_json::json!({
+            "status": "error",
+            "message": format!("error generating token: {}", e),
+        });
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(error_response))
+    })
 }

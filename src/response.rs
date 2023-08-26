@@ -4,7 +4,7 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct GenericResponse {
-    pub status: String,
+    pub status: &'static str,
     pub message: String,
 }
 
@@ -41,6 +41,7 @@ pub struct UserData {
 #[derive(Serialize, Debug)]
 pub struct SingleUserResponse {
     pub status: String,
+
     pub data: UserData,
 }
 

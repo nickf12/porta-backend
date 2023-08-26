@@ -1,9 +1,10 @@
-use axum::{http::StatusCode, response::IntoResponse, Json};
-use serde_json::json;
+use axum::{http::StatusCode, response::IntoResponse, response::Response};
+use serde::Serialize;
 
 pub type Result<T> = core::result::Result<T, AppError>;
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Serialize, strum_macros::AsRefStr)]
+#[serde(tag = "type", content = "data")]
 pub enum AppError {
     InvalidToken,
     WrongCredential,
@@ -13,23 +14,53 @@ pub enum AppError {
     UserDoesNotExist,
     UserAlreadyExits,
     AuthFailNoAuthTokenCookie,
+    AuthFailTokenWrongFormat,
+    AuthFailCtxNotInRequestExt,
+    LoginFail,
 }
 
 impl IntoResponse for AppError {
-    fn into_response(self) -> axum::response::Response {
-        let (status, err_msg) = match self {
-            Self::InternalServerError => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "an internal server error occured",
-            ),
-            Self::AuthFailNoAuthTokenCookie => (StatusCode::UNAUTHORIZED, "No Auth Token Cookie"),
-            Self::InvalidToken => (StatusCode::BAD_REQUEST, "invalid token"),
-            Self::MissingCredential => (StatusCode::BAD_REQUEST, "missing credential"),
-            Self::TokenCreation => (StatusCode::INTERNAL_SERVER_ERROR, "failed to create token"),
-            Self::WrongCredential => (StatusCode::UNAUTHORIZED, "wrong credentials"),
-            Self::UserDoesNotExist => (StatusCode::UNAUTHORIZED, "User does not exist"),
-            Self::UserAlreadyExits => (StatusCode::BAD_REQUEST, "User already exists"),
-        };
-        (status, Json(json!({ "error": err_msg }))).into_response()
+    fn into_response(self) -> Response {
+        println!("->> {:<12} - {self:?}", "INTO_RES");
+
+        // Create a placeholder Axum reponse.
+        let mut response = StatusCode::INTERNAL_SERVER_ERROR.into_response();
+
+        // Insert the Error into the reponse.
+        response.extensions_mut().insert(self);
+
+        response
     }
+}
+
+impl AppError {
+    pub fn client_status_and_error(&self) -> (StatusCode, ClientError) {
+        #[allow(unreachable_patterns)]
+        match self {
+            // -- Login
+            Self::LoginFail => (StatusCode::FORBIDDEN, ClientError::LOGIN_FAIL),
+
+            // -- Auth.
+            Self::AuthFailNoAuthTokenCookie
+            | Self::AuthFailTokenWrongFormat
+            | Self::AuthFailCtxNotInRequestExt => (StatusCode::FORBIDDEN, ClientError::NO_AUTH),
+
+            // -- Model.
+            // Add Project / Bounty errors
+            // -- Falback.
+            _ => (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                ClientError::SERVICE_ERROR,
+            ),
+        }
+    }
+}
+
+#[derive(Debug, strum_macros::AsRefStr)]
+#[allow(non_camel_case_types)]
+pub enum ClientError {
+    LOGIN_FAIL,
+    NO_AUTH,
+    INVALID_PARAMS,
+    SERVICE_ERROR,
 }
