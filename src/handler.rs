@@ -8,7 +8,7 @@ use axum::{
 use uuid::Uuid;
 
 use crate::{
-    model::{Bounty, Project, QueryOptions, UpdateBountySchema, UpdateProject, DB},
+    model::model::{Bounty, Project, QueryOptions, UpdateBountySchema, UpdateProject, DB},
     response::{
         BountyData, BountyListResponse, ProjectData, ProjectListResponse, SingleBountyResponse,
         SingleProjectResponse,

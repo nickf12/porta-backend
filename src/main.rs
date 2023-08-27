@@ -1,102 +1,69 @@
-use crate::log::log_request;
+#![allow(unused)] // For early development.
 
-pub use self::error::{AppError, Result};
+// region:    --- Modules
 
-mod auth;
-mod auth_handler;
+mod config;
+mod crypt;
 mod ctx;
 mod error;
-mod handler;
 mod log;
 mod model;
-mod mw;
-mod response;
-mod route;
-mod token;
+mod utils;
+mod web;
 
+// #[cfg(test)] // Commented during early development.
+pub mod _dev_utils;
+
+pub use self::error::{Error, Result};
+pub use config::config;
+
+use crate::model::ModelManager;
+use crate::web::mw_auth::{mw_ctx_require, mw_ctx_resolve};
+use crate::web::mw_res_map::mw_reponse_map;
+use crate::web::{routes_login, routes_static, rpc};
+use axum::response::Html;
+use axum::routing::get;
+use axum::{middleware, Router};
 use std::net::SocketAddr;
+use tower_cookies::CookieManagerLayer;
+use tracing::info;
+use tracing_subscriber::EnvFilter;
 
-use axum::{
-    http::{
-        header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
-        HeaderValue, Method, Uri,
-    },
-    response::{IntoResponse, Response},
-    Json,
-};
-use ctx::Ctx;
-use once_cell::sync::Lazy;
-use route::create_router;
-use serde_json::json;
-use tower_http::cors::CorsLayer;
-use uuid::Uuid;
-
-// TODO: Add secret key for JWT token
-static _KEYS: Lazy<auth::_Keys> = Lazy::new(|| {
-    let secret = std::env::var("JWT_SECRET").unwrap_or_else(|_| "Your secret here".to_owned());
-    auth::_Keys::_new(secret.as_bytes())
-});
+// endregion: --- Modules
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
     tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::INFO)
+        .without_time() // For early local development.
+        .with_target(false)
+        .with_env_filter(EnvFilter::from_default_env())
         .init();
 
-    let cors = CorsLayer::new()
-        .allow_origin("http://localhost:8080".parse::<HeaderValue>().unwrap())
-        .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
-        .allow_credentials(true)
-        .allow_headers([AUTHORIZATION, ACCEPT, CONTENT_TYPE]);
+    // -- FOR DEV ONLY
+    _dev_utils::init_dev().await;
 
-    let app = create_router().layer(cors);
+    // Initialize ModelManager.
+    let mm = ModelManager::new().await?;
 
+    // -- Define Routes
+    let routes_rpc = rpc::routes(mm.clone()).route_layer(middleware::from_fn(mw_ctx_require));
+
+    let routes_all = Router::new()
+        .merge(routes_login::routes(mm.clone()))
+        .nest("/api", routes_rpc)
+        .layer(middleware::map_response(mw_reponse_map))
+        .layer(middleware::from_fn_with_state(mm.clone(), mw_ctx_resolve))
+        .layer(CookieManagerLayer::new())
+        .fallback_service(routes_static::serve_dir());
+
+    // region:    --- Start Server
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
-
-    println!("🚀 Server started successfully");
-    println!("->> LISTENING on {addr}\n");
+    info!("{:<12} - {addr}\n", "LISTENING");
     axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+        .serve(routes_all.into_make_service())
         .await
         .unwrap();
-}
+    // endregion: --- Start Server
 
-// Axum special layer that take a response and return a response
-async fn main_response_mapper(
-    ctx: Option<Ctx>,
-    uri: Uri,
-    req_method: Method,
-    res: Response,
-) -> Response {
-    println!("->> {:<12} - main_response_mapper", "RES_MAPPER");
-    let uuid = Uuid::new_v4();
-
-    // -- Get the eventual response error.
-    let service_error = res.extensions().get::<AppError>();
-    let client_status_error = service_error.map(|se| se.client_status_and_error());
-
-    // -- If client error, build the new reponse.
-    let error_response = client_status_error
-        .as_ref()
-        .map(|(status_code, client_error)| {
-            let client_error_body = json!({
-                "error": {
-                    "type": client_error.as_ref(),
-                    "req_uuid": uuid.to_string(),
-                }
-            });
-
-            println!("    ->> client_error_body: {client_error_body}");
-
-            // Build the new response from the client_error_body
-            (*status_code, Json(client_error_body)).into_response()
-        });
-
-    // Build and log the server log line.
-    let client_error = client_status_error.unzip().1;
-    // TODO: Need to hander if log_request fail (but should not fail request)
-    let _ = log_request(uuid, req_method, uri, ctx, service_error, client_error).await;
-
-    println!();
-    error_response.unwrap_or(res)
+    Ok(())
 }

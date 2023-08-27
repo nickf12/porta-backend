@@ -14,7 +14,7 @@ use crate::{
 
 pub fn create_router() -> Router {
     // TODO: Add database backup and restoring
-    let db = model::porta_db();
+    let db = model::model::porta_db();
 
     let mw_routes = mw_routes(db.clone()).route_layer(from_fn(mw_require_auth));
 

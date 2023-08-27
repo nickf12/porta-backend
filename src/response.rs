@@ -1,5 +1,5 @@
 use crate::auth::User;
-use crate::model::{Bounty, Project};
+use crate::model::model::{Bounty, Project};
 use serde::Serialize;
 
 #[derive(Serialize)]

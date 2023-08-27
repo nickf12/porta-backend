@@ -11,14 +11,14 @@ use uuid::Uuid;
 
 use crate::{
     auth::{User, AUTH_TOKEN},
-    model::QueryOptions,
+    model::model::QueryOptions,
     response::UserListResponse,
     token::{self, TokenDetails},
     AppError,
 };
 
 use crate::{
-    model::DB,
+    model::model::DB,
     response::{SingleUserResponse, UserData},
 };
 // Axum Route Function to Add a Record

@@ -14,10 +14,10 @@ use crate::{
         get_all_bounty_from_project_handler, get_bounty_handler, get_project_handler,
         projects_list_handler,
     },
-    model::Database,
+    model::model::Database,
 };
 
-use crate::model::DB;
+use crate::model::model::DB;
 
 pub fn mw_routes(db: DB) -> Router<Arc<Mutex<Database>>> {
     Router::new()
