@@ -9,7 +9,7 @@ async fn quick_dev() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:8080")?;
 
     let porta = hc.do_get("/porta").await?;
-    println! {"/Porta status is {}", &porta.status()};
+
     assert_eq!(porta.status(), 200);
 
     // assert_eq!(hc.do_get("/api/projects").await?.status(), 500);
