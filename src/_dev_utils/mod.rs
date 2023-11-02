@@ -3,7 +3,8 @@
 mod dev_db;
 
 use crate::ctx::Ctx;
-use crate::model::project::{Task, TaskBmc, TaskForCreate};
+use crate::model::bounty::{Bounty, BountyBmc, BountyForCreate};
+// use crate::model::project::{Task, TaskBmc, TaskForCreate};
 use crate::model::{self, ModelManager};
 use tokio::sync::OnceCell;
 use tracing::info;
@@ -37,22 +38,26 @@ pub async fn init_test() -> ModelManager {
     mm.clone()
 }
 
-pub async fn seed_tasks(ctx: &Ctx, mm: &ModelManager, titles: &[&str]) -> model::Result<Vec<Task>> {
-    let mut tasks = Vec::new();
+pub async fn seed_tasks(
+    ctx: &Ctx,
+    mm: &ModelManager,
+    titles: &[&str],
+) -> model::Result<Vec<Bounty>> {
+    let mut bounties = Vec::new();
 
     for title in titles {
-        let id = TaskBmc::create(
+        let id = BountyBmc::create(
             ctx,
             mm,
-            TaskForCreate {
+            BountyForCreate {
                 title: title.to_string(),
             },
         )
         .await?;
-        let task = TaskBmc::get(ctx, mm, id).await?;
+        let bounty = BountyBmc::get(ctx, mm, id).await?;
 
-        tasks.push(task);
+        bounties.push(bounty);
     }
 
-    Ok(tasks)
+    Ok(bounties)
 }

@@ -1,0 +1,18 @@
+
+
+# Connect with postgres user:
+sudo -i -u postgres
+# Enter postgres
+psql
+# List DBs
+\list
+# Connect DB
+\c db_name
+# Display tables
+\d || \d table_name
+
+# With Docker:
+docker exec -it -u postgres pg psql
+// Connect to database
+\c app_db 
+// Execute queries...

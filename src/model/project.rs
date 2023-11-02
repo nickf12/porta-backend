@@ -1,6 +1,6 @@
 use crate::model::{Error, Result};
 use serde::{Deserialize, Serialize};
-use sqlb::HasFields;
+use sqlb::{Fields, HasFields};
 use sqlx::{postgres::PgRow, FromRow};
 
 use crate::ctx::Ctx;
@@ -11,7 +11,7 @@ use super::{
 };
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, Fields, FromRow)]
 pub struct Project {
     pub id: i64,
     pub project_id: String,
@@ -52,4 +52,49 @@ impl ProjectBmc {
     {
         base::get::<Self, _>(ctx, mm, id).await
     }
+
+    pub async fn first_by_project_id<E>(
+        _ctx: &Ctx,
+        mm: &ModelManager,
+        project_id: &str,
+    ) -> Result<Option<E>>
+    where
+        E: ProjectBy,
+    {
+        let db = mm.db();
+        let project = sqlb::select()
+            .table(self::DbBmc::TABLE)
+            .and_where("project_id", "=", project_id)
+            .fetch_optional::<_, E>(db)
+            .await?;
+        Ok(project)
+    }
+
+    pub async fn update_project_lead_addr(
+        ctx: &Ctx,
+        mm: &ModelManager,
+        id: i64,
+        project_lead_addr: &str,
+    ) -> Result<()> {
+        let db = mm.db();
+
+        let project: Project = Self::get(ctx, mm, id).await?;
+
+        sqlb::update()
+            .table(Self::TABLE)
+            .and_where("project_lead_address", "=", id)
+            .data(vec![(
+                "project_lead_address",
+                project_lead_addr.to_string(),
+            )
+                .into()])
+            .exec(db)
+            .await?;
+        Ok(())
+    }
+    // TODO: Implement Update for almost all project's fields
+
+    // TODO: Implement delete project
+
+    // TODO: Implement other getters
 }

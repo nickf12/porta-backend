@@ -1,5 +1,6 @@
 use crate::ctx::Ctx;
 //use crate::model::user::{User, UserBmc};
+use crate::model::user::{User, UserBmc, UserForCreate};
 use crate::model::ModelManager;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::{Pool, Postgres};
@@ -18,7 +19,7 @@ const PG_DEV_APP_URL: &str = "postgres://app_user:dev_only_pwd@localhost/app_db"
 const SQL_RECREATE_DB: &str = "sql/dev_initial/00-recreate-db.sql";
 const SQL_DIR: &str = "sql/dev_initial";
 
-const DEMO_PWD: &str = "welcome";
+const DEMO_PWD: &str = "dev_only_pwd";
 
 pub async fn init_dev_db() -> Result<(), Box<dyn std::error::Error>> {
     info!("{:<12} - init_dev_db()", "FOR-DEV-ONLY");
@@ -39,7 +40,7 @@ pub async fn init_dev_db() -> Result<(), Box<dyn std::error::Error>> {
     let app_db = new_db_pool(PG_DEV_APP_URL).await?;
     for path in paths {
         if let Some(path) = path.to_str() {
-            let path = path.replace('\\', "/"); // for windows.
+            let path = path.to_string(); // for windows.
 
             // Only take the .sql and skip the SQL_RECREATE_DB
             if path.ends_with(".sql") && path != SQL_RECREATE_DB {
@@ -48,16 +49,16 @@ pub async fn init_dev_db() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    // // -- Init model layer.
-    // let mm = ModelManager::new().await?;
-    // let ctx = Ctx::root_ctx();
+    // -- Init model layer.
+    let mm = ModelManager::new().await?;
+    let ctx = Ctx::root_ctx();
 
-    // // -- Set demo1 pwd
-    // let demo1_user: User = UserBmc::first_by_username(&ctx, &mm, "demo1")
-    //     .await?
-    //     .unwrap();
-    // UserBmc::update_pwd(&ctx, &mm, demo1_user.id, DEMO_PWD).await?;
-    // info!("{:<12} - init_dev_db - set demo1 pwd", "FOR-DEV-ONLY");
+    // -- Set demo1 pwd
+    let demo1_user: User = UserBmc::first_by_username(&ctx, &mm, "demo1")
+        .await?
+        .unwrap();
+    UserBmc::update_pwd(&ctx, &mm, demo1_user.id, DEMO_PWD).await?;
+    info!("{:<12} - init_dev_db - set demo1 pwd", "FOR-DEV-ONLY");
 
     Ok(())
 }

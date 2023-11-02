@@ -14,7 +14,6 @@ use uuid::Uuid;
 pub struct User {
     pub id: i64,
     pub username: String,
-    pub address: String,
 }
 
 #[derive(Deserialize)]
