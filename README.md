@@ -21,7 +21,7 @@
 > ``` cargo watch -q -c -w src/ -w .cargo/ -x run ```
 
 * Run Tests
-> ``` cargo watch -q -c -w examples/ -x "test -q quick_dev -- --nocapture" ```
+> ``` cargo watch -q -c -w examples/ -x "run --example  quick_dev -- --nocapture" ```
 
 * Run single test
 > ``` cargo watch -q -c -x "test test_create_ok -- --nocapture" ```
