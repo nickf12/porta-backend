@@ -16,6 +16,57 @@ async fn main() -> Result<()> {
         }),
     );
     req_login.await?.print().await?;
+    let req_create_bounty = hc.do_post(
+        "/api/rpc",
+        json!({
+            "id": "1",
+            "method": "create_bounty",
+            "params": {
+                "data": {
+                    "title" : "AUX-01"
+                }
+            }
+        }),
+    );
+    req_create_bounty.await?.print().await?;
+    let req_update_bounty = hc.do_post(
+        "/api/rpc",
+        json!({
+            "id": "1",
+            "method": "update_bounty",
+            "params": {
+                "id": 1000,
+                "data": {
+                    "title" : "AUX-02"
+                }
+            }
+        }),
+    );
+    req_update_bounty.await?.print().await?;
+
+    let req_list_bounties = hc.do_post(
+        "/api/rpc",
+        json!({
+            "id": "1",
+            "method": "list_bounty"
+        }),
+    );
+    req_list_bounties.await?.print().await?;
+    let req_delete_bounty = hc.do_post(
+        "/api/rpc",
+        json!({
+            "id": "1",
+            "method": "delete_bounty",
+            "params": {
+                "id": 1000,
+                "data": {
+                    "title" : "AUX-02"
+                }
+            }
+        }),
+    );
+    req_delete_bounty.await?.print().await?;
+
     Ok(())
     /*
        let porta = hc.do_get("/porta").await?;
@@ -96,7 +147,5 @@ async fn main() -> Result<()> {
        Ok(())
     */
 }
-
-// FIXME: Update tests using assertions on HTTP Response status codes
 
 // TODO: Write integration tests
