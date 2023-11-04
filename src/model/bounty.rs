@@ -11,15 +11,27 @@ use super::base::{self, DbBmc};
 #[derive(Debug, Clone, Fields, FromRow, Serialize)]
 pub struct Bounty {
     pub id: i64,
-    pub title: String,
+    pub bounty_title: String,
+    pub bounty_assignee: String,
+    pub bounty_reward: String,
+    pub bounty_deliverables: String,
+    pub bounty_description: String,
 }
 #[derive(Deserialize, Fields)]
 pub struct BountyForCreate {
-    pub title: String,
+    pub bounty_title: String,
+    pub bounty_assignee: String,
+    pub bounty_reward: String,
+    pub bounty_deliverables: String,
+    pub bounty_description: String,
 }
 #[derive(Deserialize, Fields)]
 pub struct BountyForUpdate {
-    pub title: Option<String>,
+    pub bounty_title: Option<String>,
+    pub bounty_assignee: Option<String>,
+    pub bounty_reward: Option<String>,
+    pub bounty_deliverables: Option<String>,
+    pub bounty_description: Option<String>,
 }
 // endregion: --- Bounty Types
 
@@ -76,7 +88,11 @@ mod tests {
         let fx_title = "test_create_ok title";
         // -- Exec
         let bounty_c = BountyForCreate {
-            title: fx_title.to_string(),
+            bounty_title: fx_title.to_string(),
+            bounty_assignee: fx_title.to_string(),
+            bounty_deliverables: fx_title.to_string(),
+            bounty_description: fx_title.to_string(),
+            bounty_reward: fx_title.to_string(),
         };
         let id = BountyBmc::create(&ctx, &mm, bounty_c).await?;
 
@@ -95,12 +111,16 @@ mod tests {
             .rows_affected();
         assert_eq!(count, 1, "Did not delete 1 row?");
         let bounty_c = BountyForCreate {
-            title: fx_title.to_string(),
+            bounty_title: fx_title.to_string(),
+            bounty_assignee: fx_title.to_string(),
+            bounty_deliverables: fx_title.to_string(),
+            bounty_description: fx_title.to_string(),
+            bounty_reward: fx_title.to_string(),
         };
         let id = BountyBmc::create(&ctx, &mm, bounty_c).await?;
         // -- Check Bounty using model get method
         let bounty = BountyBmc::get(&ctx, &mm, id).await?;
-        assert_eq!(bounty.title, fx_title);
+        assert_eq!(bounty.bounty_title, fx_title);
         // -- Clean Bounty using model delete method
         BountyBmc::delete(&ctx, &mm, id).await?;
 
@@ -163,7 +183,7 @@ mod tests {
         // -- Check
         let bounties: Vec<Bounty> = bounties
             .into_iter()
-            .filter(|t| t.title.starts_with("test_list_ok"))
+            .filter(|t| t.bounty_title.starts_with("test_list_ok"))
             .collect();
         assert_eq!(bounties.len(), 2, "number of seeded bounties");
         // -- Clean
@@ -189,13 +209,18 @@ mod tests {
             &mm,
             fx_bounty.id,
             BountyForUpdate {
-                title: Some(fx_new_title.to_string()),
+                bounty_title: Some(fx_new_title.to_string()),
+                bounty_assignee: Some(fx_new_title.to_string()),
+                bounty_deliverables: Some(fx_new_title.to_string()),
+                bounty_description: Some(fx_new_title.to_string()),
+                bounty_reward: Some(fx_new_title.to_string()),
             },
         )
         .await?;
         // -- Check
         let bounty = BountyBmc::get(&ctx, &mm, fx_bounty.id).await?;
-        assert_eq!(bounty.title, fx_new_title);
+        assert_eq!(bounty.bounty_title, fx_new_title);
+
         Ok(())
     }
 }

@@ -8,6 +8,15 @@ use serde_json::json;
 async fn main() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:8080")?;
 
+    let req_login = hc.do_post(
+        "/api/login",
+        json!({
+            "username": "demo1",
+            "pwd": "dev_only_pwd"
+        }),
+    );
+
+    req_login.await?.print().await?;
     let req_create_bounty = hc.do_post(
         "/api/rpc",
         json!({
@@ -58,7 +67,7 @@ async fn main() -> Result<()> {
         }),
     );
     req_delete_bounty.await?.print().await?;
-    let req_delete_bounty = hc.do_post(
+    let req_create_project = hc.do_post(
         "/api/rpc",
         json!({
             "id": "1",
@@ -76,7 +85,37 @@ async fn main() -> Result<()> {
             }
         }),
     );
-    req_delete_bounty.await?.print().await?;
+    req_create_project.await?.print().await?;
+    let req_list_project = hc.do_post(
+        "/api/rpc",
+        json!({
+            "id": "1",
+            "method": "list_project"
+        }),
+    );
+
+    req_list_project.await?.print().await?;
+    let req_update_project = hc.do_post(
+        "/api/rpc",
+        json!({
+            "id": "1",
+            "method": "update_project",
+            "params": {
+                "id": 1000,
+
+                "data": {
+                    "project_id":"AUX2",
+                    "project_name": "Auxilium",
+                    "project_lead_address": "Pecunia",
+                    "project_budget": "9999999",
+                    "project_denom": "BTC",
+                    "project_type": "DAO",
+                    "project_description": "PECUDAO",
+                }
+            }
+        }),
+    );
+    req_update_project.await?.print().await?;
 
     Ok(())
     /*

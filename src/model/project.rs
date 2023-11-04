@@ -35,7 +35,6 @@ pub struct ProjectForCreate {
 }
 #[derive(Deserialize, Fields)]
 pub struct ProjectForUpdate {
-    pub id: i64,
     pub project_id: Option<String>,
     pub project_name: Option<String>,
     pub project_lead_address: Option<String>,

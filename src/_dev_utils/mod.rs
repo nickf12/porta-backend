@@ -50,7 +50,13 @@ pub async fn seed_tasks(
             ctx,
             mm,
             BountyForCreate {
-                title: title.to_string(),
+                bounty_title: title.to_string(),
+                bounty_assignee: title.to_string(),
+
+                bounty_deliverables: title.to_string(),
+
+                bounty_description: title.to_string(),
+                bounty_reward: title.to_string(),
             },
         )
         .await?;

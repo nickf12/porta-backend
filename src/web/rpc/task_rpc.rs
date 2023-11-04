@@ -4,7 +4,10 @@ use crate::model::project::{Project, ProjectBmc, ProjectForCreate, ProjectForUpd
 use crate::model::ModelManager;
 use crate::web::rpc::{ParamsForCreate, ParamsForUpdate, ParamsIded};
 use crate::web::Result;
+
 // -- TODO: Add permission layer for create, update and delete routes
+
+// -- Create bounty
 pub async fn create_bounty(
     ctx: Ctx,
     mm: ModelManager,
@@ -18,12 +21,14 @@ pub async fn create_bounty(
     Ok(task)
 }
 
+// -- List bounties
 pub async fn list_bounty(ctx: Ctx, mm: ModelManager) -> Result<Vec<Bounty>> {
     let tasks = BountyBmc::list(&ctx, &mm).await?;
 
     Ok(tasks)
 }
 
+// -- Update bounty
 pub async fn update_bounty(
     ctx: Ctx,
     mm: ModelManager,
@@ -38,6 +43,7 @@ pub async fn update_bounty(
     Ok(task)
 }
 
+// -- Delete bounty
 pub async fn delete_bounty(ctx: Ctx, mm: ModelManager, params: ParamsIded) -> Result<Bounty> {
     let ParamsIded { id } = params;
 
@@ -47,6 +53,7 @@ pub async fn delete_bounty(ctx: Ctx, mm: ModelManager, params: ParamsIded) -> Re
     Ok(task)
 }
 
+// -- Create project
 pub async fn create_project(
     ctx: Ctx,
     mm: ModelManager,
@@ -60,12 +67,14 @@ pub async fn create_project(
     Ok(task)
 }
 
+// -- List project
 pub async fn list_project(ctx: Ctx, mm: ModelManager) -> Result<Vec<Project>> {
     let tasks = ProjectBmc::list(&ctx, &mm).await?;
 
     Ok(tasks)
 }
 
+// -- Update project
 pub async fn update_project(
     ctx: Ctx,
     mm: ModelManager,
@@ -80,6 +89,7 @@ pub async fn update_project(
     Ok(task)
 }
 
+// -- Delete project
 pub async fn delete_project(ctx: Ctx, mm: ModelManager, params: ParamsIded) -> Result<Project> {
     let ParamsIded { id } = params;
 
