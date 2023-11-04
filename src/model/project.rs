@@ -23,9 +23,8 @@ pub struct Project {
     pub project_description: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Fields)]
 pub struct ProjectForCreate {
-    pub id: i64,
     pub project_id: String,
     pub project_name: String,
     pub project_lead_address: String,
@@ -33,6 +32,17 @@ pub struct ProjectForCreate {
     pub project_denom: String,
     pub project_type: String,
     pub project_description: String,
+}
+#[derive(Deserialize, Fields)]
+pub struct ProjectForUpdate {
+    pub id: i64,
+    pub project_id: Option<String>,
+    pub project_name: Option<String>,
+    pub project_lead_address: Option<String>,
+    pub project_budget: Option<String>,
+    pub project_denom: Option<String>,
+    pub project_type: Option<String>,
+    pub project_description: Option<String>,
 }
 
 pub trait ProjectBy: HasFields + for<'r> FromRow<'r, PgRow> + Unpin + Send {}
@@ -46,52 +56,29 @@ impl DbBmc for ProjectBmc {
 }
 
 impl ProjectBmc {
-    pub async fn get<E>(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<E>
-    where
-        E: ProjectBy,
-    {
+    pub async fn create(ctx: &Ctx, mm: &ModelManager, project_c: ProjectForCreate) -> Result<i64> {
+        base::create::<Self, _>(ctx, mm, project_c).await
+    }
+
+    pub async fn get(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<Project> {
         base::get::<Self, _>(ctx, mm, id).await
     }
 
-    pub async fn first_by_project_id<E>(
-        _ctx: &Ctx,
-        mm: &ModelManager,
-        project_id: &str,
-    ) -> Result<Option<E>>
-    where
-        E: ProjectBy,
-    {
-        let db = mm.db();
-        let project = sqlb::select()
-            .table(self::DbBmc::TABLE)
-            .and_where("project_id", "=", project_id)
-            .fetch_optional::<_, E>(db)
-            .await?;
-        Ok(project)
+    pub async fn list(ctx: &Ctx, mm: &ModelManager) -> Result<Vec<Project>> {
+        base::list::<Self, _>(ctx, mm).await
     }
-
-    pub async fn update_project_lead_addr(
+    pub async fn update(
         ctx: &Ctx,
         mm: &ModelManager,
-        project_id: &str,
-        project_lead_addr: &str,
+        id: i64,
+        bounty_u: ProjectForUpdate,
     ) -> Result<()> {
-        let db = mm.db();
-
-        let project: Project = Self::get(ctx, mm, id).await?;
-
-        sqlb::update()
-            .table(Self::TABLE)
-            .and_where("project_id", "=", project_id)
-            .data(vec![(
-                "project_lead_address",
-                project_lead_addr.to_string(),
-            )
-                .into()])
-            .exec(db)
-            .await?;
-        Ok(())
+        base::update::<Self, _>(ctx, mm, id, bounty_u).await
     }
+    pub async fn delete(ctx: &Ctx, mm: &ModelManager, id: i64) -> Result<()> {
+        base::delete::<Self>(ctx, mm, id).await
+    }
+
     // TODO: Implement Update for almost all project's fields
 
     // TODO: Implement delete project

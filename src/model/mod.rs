@@ -22,6 +22,7 @@
 mod base;
 pub mod bounty;
 mod error;
+pub mod project;
 mod store;
 pub mod user;
 
