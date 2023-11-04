@@ -4,7 +4,10 @@ mod params;
 mod task_rpc;
 use crate::ctx::Ctx;
 use crate::model::ModelManager;
-use crate::web::rpc::task_rpc::{create_bounty, delete_bounty, list_bounty, update_bounty};
+use crate::web::rpc::task_rpc::{
+    create_bounty, create_project, delete_bounty, delete_project, list_bounty, list_project,
+    update_bounty, update_project,
+};
 use crate::web::{Error, Result};
 use axum::extract::State;
 use axum::response::{IntoResponse, Response};
@@ -110,6 +113,10 @@ async fn _rpc_handler(ctx: Ctx, mm: ModelManager, rpc_req: RpcRequest) -> Result
         "list_bounty" => exec_rpc_fn!(list_bounty, ctx, mm),
         "update_bounty" => exec_rpc_fn!(update_bounty, ctx, mm, rpc_params),
         "delete_bounty" => exec_rpc_fn!(delete_bounty, ctx, mm, rpc_params),
+        "create_project" => exec_rpc_fn!(create_project, ctx, mm, rpc_params),
+        "list_project" => exec_rpc_fn!(list_project, ctx, mm),
+        "update_project" => exec_rpc_fn!(update_project, ctx, mm, rpc_params),
+        "delete_project" => exec_rpc_fn!(delete_project, ctx, mm, rpc_params),
 
         // -- Fallback as Err.
         _ => return Err(Error::RpcMethodUnknown(rpc_method)),
