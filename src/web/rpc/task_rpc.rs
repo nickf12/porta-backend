@@ -1,47 +1,47 @@
 use crate::ctx::Ctx;
-use crate::model::task::{Task, TaskBmc, TaskForCreate, TaskForUpdate};
+use crate::model::bounty::{Bounty, BountyBmc, BountyForCreate, BountyForUpdate};
 use crate::model::ModelManager;
 use crate::web::rpc::{ParamsForCreate, ParamsForUpdate, ParamsIded};
 use crate::web::Result;
 
-pub async fn create_task(
+pub async fn create_bounty(
     ctx: Ctx,
     mm: ModelManager,
-    params: ParamsForCreate<TaskForCreate>,
-) -> Result<Task> {
+    params: ParamsForCreate<BountyForCreate>,
+) -> Result<Bounty> {
     let ParamsForCreate { data } = params;
 
-    let id = TaskBmc::create(&ctx, &mm, data).await?;
-    let task = TaskBmc::get(&ctx, &mm, id).await?;
+    let id = BountyBmc::create(&ctx, &mm, data).await?;
+    let task = BountyBmc::get(&ctx, &mm, id).await?;
 
     Ok(task)
 }
 
-pub async fn list_tasks(ctx: Ctx, mm: ModelManager) -> Result<Vec<Task>> {
-    let tasks = TaskBmc::list(&ctx, &mm).await?;
+pub async fn list_bounty(ctx: Ctx, mm: ModelManager) -> Result<Vec<Bounty>> {
+    let tasks = BountyBmc::list(&ctx, &mm).await?;
 
     Ok(tasks)
 }
 
-pub async fn update_task(
+pub async fn update_bounty(
     ctx: Ctx,
     mm: ModelManager,
-    params: ParamsForUpdate<TaskForUpdate>,
-) -> Result<Task> {
+    params: ParamsForUpdate<BountyForUpdate>,
+) -> Result<Bounty> {
     let ParamsForUpdate { id, data } = params;
 
-    TaskBmc::update(&ctx, &mm, id, data).await?;
+    BountyBmc::update(&ctx, &mm, id, data).await?;
 
-    let task = TaskBmc::get(&ctx, &mm, id).await?;
+    let task = BountyBmc::get(&ctx, &mm, id).await?;
 
     Ok(task)
 }
 
-pub async fn delete_task(ctx: Ctx, mm: ModelManager, params: ParamsIded) -> Result<Task> {
+pub async fn delete_bounty(ctx: Ctx, mm: ModelManager, params: ParamsIded) -> Result<Bounty> {
     let ParamsIded { id } = params;
 
-    let task = TaskBmc::get(&ctx, &mm, id).await?;
-    TaskBmc::delete(&ctx, &mm, id).await?;
+    let task = BountyBmc::get(&ctx, &mm, id).await?;
+    BountyBmc::delete(&ctx, &mm, id).await?;
 
     Ok(task)
 }

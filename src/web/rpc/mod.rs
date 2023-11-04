@@ -1,15 +1,16 @@
 // region:    --- Modules
 
-// mod task_rpc;
-
+mod params;
+mod task_rpc;
 use crate::ctx::Ctx;
 use crate::model::ModelManager;
-// use crate::web::rpc::task_rpc::{create_task, delete_task, list_tasks, update_task};
+use crate::web::rpc::task_rpc::{create_bounty, delete_bounty, list_bounty, update_bounty};
 use crate::web::{Error, Result};
 use axum::extract::State;
 use axum::response::{IntoResponse, Response};
 use axum::routing::post;
 use axum::{Json, Router};
+use params::*;
 use serde::Deserialize;
 use serde_json::{from_value, json, to_value, Value};
 use tracing::debug;
@@ -94,7 +95,6 @@ macro_rules! exec_rpc_fn {
     };
 }
 
-//FIXME: Remove underscore when is possible to use this component
 async fn _rpc_handler(ctx: Ctx, mm: ModelManager, rpc_req: RpcRequest) -> Result<Json<Value>> {
     let RpcRequest {
         id: rpc_id,
@@ -106,11 +106,10 @@ async fn _rpc_handler(ctx: Ctx, mm: ModelManager, rpc_req: RpcRequest) -> Result
 
     let result_json: Value = match rpc_method.as_str() {
         // -- Task RPC methods.
-        // FIXME: Rpc handlers routes
-        // "create_task" => exec_rpc_fn!(_create_task, ctx, mm, rpc_params),
-        // "list_tasks" => exec_rpc_fn!(list_tasks, ctx, mm),
-        // "update_task" => exec_rpc_fn!(update_task, ctx, mm, rpc_params),
-        // "delete_task" => exec_rpc_fn!(delete_task, ctx, mm, rpc_params),
+        "create_bounty" => exec_rpc_fn!(create_bounty, ctx, mm, rpc_params),
+        "list_bounty" => exec_rpc_fn!(list_bounty, ctx, mm),
+        "update_bounty" => exec_rpc_fn!(update_bounty, ctx, mm, rpc_params),
+        "delete_bounty" => exec_rpc_fn!(delete_bounty, ctx, mm, rpc_params),
 
         // -- Fallback as Err.
         _ => return Err(Error::RpcMethodUnknown(rpc_method)),
