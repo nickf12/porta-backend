@@ -8,14 +8,6 @@ use serde_json::json;
 async fn main() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:8080")?;
 
-    let req_login = hc.do_post(
-        "/api/login",
-        json!({
-            "username": "demo1",
-            "pwd": "dev_only_pwd"
-        }),
-    );
-    req_login.await?.print().await?;
     let req_create_bounty = hc.do_post(
         "/api/rpc",
         json!({
@@ -61,6 +53,25 @@ async fn main() -> Result<()> {
                 "id": 1000,
                 "data": {
                     "title" : "AUX-02"
+                }
+            }
+        }),
+    );
+    req_delete_bounty.await?.print().await?;
+    let req_delete_bounty = hc.do_post(
+        "/api/rpc",
+        json!({
+            "id": "1",
+            "method": "create_project",
+            "params": {
+                "data": {
+                    "project_id":"AUX",
+                    "project_name": "String",
+                    "project_lead_address": "String",
+                    "project_budget": "String",
+                    "project_denom": "String",
+                    "project_type": "String",
+                    "project_description": "String",
                 }
             }
         }),
