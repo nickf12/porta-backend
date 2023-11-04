@@ -73,7 +73,7 @@ impl ProjectBmc {
     pub async fn update_project_lead_addr(
         ctx: &Ctx,
         mm: &ModelManager,
-        id: i64,
+        project_id: &str,
         project_lead_addr: &str,
     ) -> Result<()> {
         let db = mm.db();
@@ -82,7 +82,7 @@ impl ProjectBmc {
 
         sqlb::update()
             .table(Self::TABLE)
-            .and_where("project_lead_address", "=", id)
+            .and_where("project_id", "=", project_id)
             .data(vec![(
                 "project_lead_address",
                 project_lead_addr.to_string(),
