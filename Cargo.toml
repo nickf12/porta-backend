@@ -11,7 +11,7 @@ tokio = { version = "1.32.0", features = ["full"] }
 # Axum / Tokio
 axum = "0.6.20"
 tower-http = { version = "0.4", features = ["fs"] }
-tower-cookies = "0.9"
+tower-cookies = "0.10"
 
 # Tracing
 tracing = "0.1.37"
