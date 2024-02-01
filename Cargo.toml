@@ -43,7 +43,7 @@ lazy-regex = "3"
 chrono = { version = "0.4.26", features = ["serde"] }
 once_cell = "1.18.0"
 async-trait = "0.1.73"
-strum_macros = "0.25.2"
+strum_macros = "0.26.1"
 
 
 [dev-dependencies]
